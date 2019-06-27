@@ -12,6 +12,8 @@ app.use(cors());
 require('./DB/db');
 const User = require('./model/user');
 const Hospital = require('./model/hospital');
+const Doctor = require('./model/doctor');
+const Ambulance = require('./model/ambulance');
 const auth = require('./middleware/auth');
 
 
@@ -39,15 +41,21 @@ console.log(e)
    }
   })
 
+  app.get("/getProfile", auth, function (req, res) {
+    res.send(req.user)
+  })
+
   app.post('/logout', auth, async (req, res) => {
     try {
-      console.log("Logging out")
-        req.user.tokens = []
-        await req.user.save()
-        res.send("Done")
-    } catch (e) {
-        res.status(500).send()
-    }
+      req.user.tokens = req.user.tokens.filter((token) => {
+      return token.token !== req.token
+      })
+      await req.user.save()
+      res.send("Done")
+      } catch (e) {
+      res.status(500).send()
+      }
+     
   })
 
 
@@ -140,6 +148,36 @@ var storage = multer.diskStorage({
   hospital.save();
   res.json("success");
  })
+
+ app.post('/addDoctor',auth,(req,res)=>{
+   var doctor = new Doctor(req.body);
+   doctor.save();
+   res.json("success");
+ })
+
+ app.get('/getAllDoctors',auth, (req, res)=> {
+  Doctor.find().then(function (doctors) {
+    res.send(doctors);
+    console.log(doctors);
+  }).catch(function (e) {
+    res.send(e)
+  });
+});
+
+app.post('/addAmbulance',auth,(req,res)=>{
+  var ambulance = new Ambulance(req.body);
+  ambulance.save();
+  res.json("success");
+})
+
+app.get('/getAllAmbulance',auth, (req, res)=> {
+ Ambulance.find().then(function (ambulances) {
+   res.send(ambulances);
+   console.log(ambulances);
+ }).catch(function (e) {
+   res.send(e)
+ });
+});
   
   
   module.exports = app;
