@@ -24,6 +24,7 @@ app.post("/login", async function(req, res){
 try{
     const user = await User.checkCrediantialsDb(req.body.username,
    req.body.password)
+   console.log(req.body.username+""+req.body.password)
    console.log(user);
    if (user) {
     const token = await user.generateAuthToken(); //generateAuthToken chnage
@@ -94,6 +95,15 @@ var storage = multer.diskStorage({
       res.json("success");
         
     });
+
+    app.put('/updateUser/:id',(req,res)=>{
+      uid = req.params.id;
+      User.findByIdAndUpdate(uid,req.body,{new:true}).then(function(user){
+        res.send(user);
+      }).catch(function(e){
+        res.send(e)
+      })
+    })
 
     app.get('/checkUsername/:username', function(req, res){
     
