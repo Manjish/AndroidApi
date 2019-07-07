@@ -14,6 +14,7 @@ const User = require('./model/user');
 const Hospital = require('./model/hospital');
 const Doctor = require('./model/doctor');
 const Ambulance = require('./model/ambulance');
+const Booking = require('./model/booking');
 const auth = require('./middleware/auth');
 
 
@@ -29,7 +30,8 @@ try{
    if (user) {
     const token = await user.generateAuthToken(); //generateAuthToken chnage
     res.send({
-      "token":token
+      "token":token,
+      "username":user.username
     });
     console.log(token)
   } else {
@@ -188,6 +190,14 @@ app.get('/getAllAmbulance',auth, (req, res)=> {
    res.send(e)
  });
 });
+
+app.post('/addAppointment', (req, res) => {
+  console.log(req.body);
+      var booking = new Booking(req.body);
+    booking.save();
+    res.json("success");
+      
+  });
   
   
   module.exports = app;

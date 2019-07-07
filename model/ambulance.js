@@ -4,6 +4,9 @@ const ambulanceschema=new mongoose.Schema({
     ambulanceName: {
         type: String   
     },
+    ambulanceAddress:{
+        type:String
+    },
     ambulanceContact: {  
         type: String  
     }
