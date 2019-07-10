@@ -15,6 +15,9 @@ const Hospital = require('./model/hospital');
 const Doctor = require('./model/doctor');
 const Ambulance = require('./model/ambulance');
 const Booking = require('./model/booking');
+const Medicine = require('./model/medicine');
+const Order = require('./model/order');
+const Firstaid = require('./model/firstaid');
 const auth = require('./middleware/auth');
 
 
@@ -98,10 +101,10 @@ var storage = multer.diskStorage({
         
     });
 
-    app.put('/updateUser/:id',(req,res)=>{
-      uid = req.params.id;
-      User.findByIdAndUpdate(uid,req.body,{new:true}).then(function(user){
-        res.send(user);
+    app.put('/updateUser/:username',(req,res)=>{
+      username=req.params.username
+      User.findOneAndUpdate({username:username},req.body,{new:true}).then(function(user){
+        res.send(true);
       }).catch(function(e){
         res.send(e)
       })
@@ -167,6 +170,12 @@ var storage = multer.diskStorage({
    res.json("success");
  })
 
+ app.post('/addMedicine',auth,(req,res)=>{
+  var medicine = new Medicine(req.body);
+  medicine.save();
+  res.json("success");
+})
+
  app.get('/getAllDoctors',auth, (req, res)=> {
   Doctor.find().then(function (doctors) {
     res.send(doctors);
@@ -198,7 +207,73 @@ app.post('/addAppointment', (req, res) => {
     res.json("success");
       
   });
-  
+
+  app.get('/getAllMedicine',auth, (req, res)=> {
+    Medicine.find().then(function (medicines) {
+      res.send(medicines);
+      console.log(medicines)
+    }).catch(function (e) {
+      res.send(e)
+    });
+   });
+
+   app.get('/getAllOrder/:username',auth, (req, res)=> {
+     username = req.params.username
+    Order.find({username:username}).then(function (order) {
+      res.send(order);
+      console.log(order)
+    }).catch(function (e) {
+      res.send(e)
+    });
+   });
+
+   app.get('/getAllAppointments/:username',auth, (req, res)=> {
+    username = req.params.username
+   Booking.find({username:username}).then(function (booking) {
+     res.send(booking);
+     console.log(booking)
+   }).catch(function (e) {
+     res.send(e)
+   });
+  });
+
+  app.put('/cancelAppointment/:id/:username',(req,res)=>{
+    id=req.params.id
+    username=req.params.username
+    console.log(id)
+    Booking.findByIdAndUpdate(id,{
+      $set:{bookingStatus:"2"}}).then(function(){
+        Booking.find({username:username}).then(function(booking){
+          res.send(booking);
+        }).catch(function(e){
+          res.send(e)
+        })
+      }).catch(function(e){
+        res.send(e);
+      })
+  })
+
+  app.post('/addMedicineOrder', (req, res) => {
+    console.log(req.body);
+        var order = new Order(req.body);
+      order.save();
+      res.json("success");
+    });
+
+    app.post('/addFirstaid', (req, res) => {
+      console.log(req.body);
+          var firstaid = new Firstaid(req.body);
+        firstaid.save();
+        res.json("success");
+      });
+
+      app.get('/getAllFirstaid',(req,res)=>{
+        Firstaid.find().then(function(firstaid){
+          res.send(firstaid)
+        }).catch((e)=>{
+          res.send(e)
+        })
+      })
   
   module.exports = app;
   app.listen(7777);
