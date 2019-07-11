@@ -141,25 +141,7 @@ var storage = multer.diskStorage({
 
 
       app.post('/addHospital',auth,(req,res)=>{
-  var hosName = req.body.hosName;
-  console.log(req.body.hosName);
-  console.log(hosName);
-  var hosDetails = req.body.hosDetails;
-  var hosAddress = req.body.hosAddress;
-  var hosContact = req.body.hosContact;
-  var hosEmail = req.body.hosEmail;
-  var hosWebsite = req.body.hosWebsite;
-  var hosImage = req.body.hosImage;
-
-  var stringDept = req.body.hosDepartmentsString;
-  var deptArray = stringDept.split(',');
-  var hosDepartments = [];
-  deptArray.forEach(element => {
-    hosDepartments=hosDepartments.concat({department:element});  
-  });
-  console.log(hosDepartments);
-  
-  var hospital = new Hospital({hosName,hosDetails,hosAddress,hosContact,hosEmail,hosWebsite,hosImage,hosDepartments});
+  var hospital = new Hospital(req.body);
   hospital.save();
   res.json("success");
  })

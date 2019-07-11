@@ -21,13 +21,7 @@ const hospitalschema=new mongoose.Schema({
     },
     hosImage:{
         type: String
-    },
-    hosDepartments: [{
-        department : {
-            type: String,
-            required: true
-        }
-    }]
+    }
 });
 
 const Hospital = mongoose.model('Hospital',hospitalschema);
